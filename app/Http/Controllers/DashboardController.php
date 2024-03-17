@@ -56,11 +56,17 @@ class DashboardController extends Controller
         } elseif (Auth::user()->is_active === 1 && Auth::user()->type === 'othercity'){
             $count = TrackList::query()->whereDate('to_client', Carbon::today())->count();
             return view('othercity')->with(compact('count', 'config', 'qr', 'cities'));
-        }elseif (Auth::user()->is_active === 1 && Auth::user()->type === 'admin' || Auth::user()->is_active === 1 && Auth::user()->type === 'moderator'){
+        }elseif (Auth::user()->is_active === 1 && Auth::user()->type === 'admin'){
             $messages = Message::all();
             $config = Configuration::query()->select('address')->first();
             $search_phrase = '';
-            $users = User::query()->select('id', 'name', 'surname', 'type', 'login', 'city', 'is_active', 'block', 'password', 'created_at')->where('type', null)->where('is_active', false)->get();
+            $users = User::query()->select('id', 'name', 'surname', 'type', 'login', 'city', 'is_active', 'block', 'password', 'created_at', 'branch')->where('type', null)->where('is_active', false)->get();
+            return view('admin')->with(compact('users', 'messages', 'search_phrase', 'config'));
+        }elseif (Auth::user()->is_active === 1 && Auth::user()->type === 'moderator'){
+            $messages = Message::all();
+            $config = Configuration::query()->select('address')->first();
+            $search_phrase = '';
+            $users = User::query()->select('id', 'name', 'surname', 'type', 'login', 'city', 'is_active', 'block', 'password', 'created_at', 'branch')->where('type', null)->where('branch', Auth::user()->city)->where('is_active', false)->get();
             return view('admin')->with(compact('users', 'messages', 'search_phrase', 'config'));
         }
         $branch = Branch::query()->select('whats_app')->where('title', Auth::user()->branch)->first();

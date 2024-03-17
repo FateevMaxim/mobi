@@ -181,6 +181,10 @@
                                         <span>{{$user->city}}</span></p>
                                 </li>
                                 <li class="flex items-center">
+                                    <p><small>Филиал</small><br />
+                                        <span>{{$user->branch}}</span></p>
+                                </li>
+                                <li class="flex items-center">
                                     <p><small>Дата регистрации</small><br />
                                         <span>{{$user->created_at}}</span></p>
                                 </li>
