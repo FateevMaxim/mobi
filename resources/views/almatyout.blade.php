@@ -16,7 +16,7 @@
 
                         <div class="min_height round_border p-4 relative">
                             <div>
-                                <h3 class="mt-0 p-4 text-2xl font-medium leading-tight text-primary">Пункт выдачи Алматы</h3>
+                                <h3 class="mt-0 p-4 text-2xl font-medium leading-tight text-primary">Пункт выдачи в {{ $cityin }}</h3>
                             </div>
                             <form method="POST" action="{{ route('getinfo-product') }}" id="getInfoForm">
                                 <div class="w-full">

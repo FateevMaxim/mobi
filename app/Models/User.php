@@ -23,8 +23,7 @@ class User extends Authenticatable
         'login',
         'city',
         'password',
-        'code',
-        'is_post',
+        'branch'
     ];
 
     /**

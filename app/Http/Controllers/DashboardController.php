@@ -2,14 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use Carbon\Carbon;
 use App\Models\City;
-use App\Models\ClientTrackList;
-use App\Models\Configuration;
+use App\Models\User;
+use App\Models\Branch;
 use App\Models\Message;
 use App\Models\QrCodes;
 use App\Models\TrackList;
-use App\Models\User;
-use Carbon\Carbon;
+use App\Models\Configuration;
+use App\Models\ClientTrackList;
 use Illuminate\Support\Facades\Auth;
 
 class DashboardController extends Controller
@@ -18,7 +19,10 @@ class DashboardController extends Controller
     {
         $qr = QrCodes::query()->select()->where('id', 1)->first();
         $qrChina = QrCodes::query()->select()->where('id', 2)->first();
+        $qrShimkent = QrCodes::query()->select()->where('id', 3)->first();
         $cities = City::query()->select('title')->get();
+
+        $config = Configuration::query()->select('address', 'title_text', 'address_two')->first();
         if (Auth::user()->is_active === 1 && Auth::user()->type === null){
             $tracks = ClientTrackList::query()
                 ->leftJoin('track_lists', 'client_track_lists.track_code', '=', 'track_lists.track_code')
@@ -28,26 +32,28 @@ class DashboardController extends Controller
                 ->where('client_track_lists.status',null)
                 ->orderByDesc('client_track_lists.id')
                 ->get();
-            $config = Configuration::query()->select('address', 'title_text', 'address_two')->first();
+            
             $count = count($tracks);
 
             $messages = Message::all();
 
             return view('dashboard')->with(compact('tracks', 'count', 'messages', 'config'));
         }elseif (Auth::user()->is_active === 1 && Auth::user()->type === 'stock'){
-            $config = Configuration::query()->select('address', 'title_text', 'address_two')->first();
             $count = TrackList::query()->whereDate('to_china', Carbon::today())->count();
             return view('stock', ['count' => $count, 'config' => $config, 'qr' => $qrChina]);
         }elseif (Auth::user()->is_active === 1 && Auth::user()->type === 'almatyin'){
-            $config = Configuration::query()->select('address', 'title_text', 'address_two')->first();
             $count = TrackList::query()->whereDate('to_almaty', Carbon::today())->count();
             return view('almaty')->with(compact('count', 'config', 'qr'));
+        }elseif (Auth::user()->is_active === 1 && Auth::user()->type === 'shimkentin') {
+            $count = TrackList::query()->whereDate('to_city', Carbon::today())->where('status', 'Получено на складе в Шымкенте')->count();
+            return view('almaty', ['count' => $count, 'config' => $config, 'cityin' => 'Шымкенте', 'qr' => $qrShimkent]);
         }elseif (Auth::user()->is_active === 1 && Auth::user()->type === 'almatyout'){
-            $config = Configuration::query()->select('address', 'title_text', 'address_two')->first();
             $count = TrackList::query()->whereDate('to_client', Carbon::today())->count();
             return view('almatyout')->with(compact('count', 'config', 'qr'));
-        }elseif (Auth::user()->is_active === 1 && Auth::user()->type === 'othercity'){
-            $config = Configuration::query()->select('address', 'title_text', 'address_two')->first();
+        } elseif (Auth::user()->is_active === 1 && Auth::user()->type === 'shimkentout') {
+            $count = TrackList::query()->whereDate('to_client_city', Carbon::today())->count();
+            return view('almatyout', ['count' => $count, 'config' => $config, 'cities' => $cities, 'cityin' => 'Шымкенте', 'qr' => $qrShimkent]);
+        } elseif (Auth::user()->is_active === 1 && Auth::user()->type === 'othercity'){
             $count = TrackList::query()->whereDate('to_client', Carbon::today())->count();
             return view('othercity')->with(compact('count', 'config', 'qr', 'cities'));
         }elseif (Auth::user()->is_active === 1 && Auth::user()->type === 'admin' || Auth::user()->is_active === 1 && Auth::user()->type === 'moderator'){
@@ -57,8 +63,8 @@ class DashboardController extends Controller
             $users = User::query()->select('id', 'name', 'surname', 'type', 'login', 'city', 'is_active', 'block', 'password', 'created_at')->where('type', null)->where('is_active', false)->get();
             return view('admin')->with(compact('users', 'messages', 'search_phrase', 'config'));
         }
-        $config = Configuration::query()->select('whats_app')->first();
-        return view('register-me')->with(compact( 'config'));
+        $branch = Branch::query()->select('whats_app')->where('title', Auth::user()->branch)->first();
+        return view('register-me')->with(compact( 'config', 'branch'));
     }
 
     public function archive ()

@@ -46,6 +46,11 @@ class ProductController extends Controller
             $city_field = 'to_almaty';
             $city_value = 'Получено на складе в Алматы';
             $reg_field = 'reg_almaty';
+        }elseif (Auth::user()->type === 'shimkentin'){
+            $city_field = 'to_city';
+            $city_value = 'Получено на складе в Шымкенте';
+            $city = 'Шымкент';
+            $reg_field = 'reg_city';
         }
 
         foreach ($array as $ar){
@@ -59,7 +64,7 @@ class ProductController extends Controller
             ];
         }
         TrackList::upsert($wordsFromFile, ['track_code', $city_field, 'status', $reg_field, 'updated_at']);
-        return redirect()->back()->with('message', 'Трек код успешно добавлен');
+        return redirect()->back()->with('message', 'Трек коды успешно добавлены');
 
     }
 

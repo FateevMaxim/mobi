@@ -9,7 +9,7 @@
 
                         <div class="min_height round_border p-4 relative">
                             <div>
-                                <h3 class="mt-0 p-4 text-2xl font-medium leading-tight text-primary">Пункт приёма Алматы</h3>
+                                <h3 class="mt-0 p-4 text-2xl font-medium leading-tight text-primary">Пункт приёма в {{ $cityin }}</h3>
                             </div>
                             <div class="absolute p-4 bottom-0">
                                 <span>Количество зарегистрированных трек кодов за сегодня</span>
