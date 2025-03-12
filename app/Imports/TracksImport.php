@@ -31,12 +31,14 @@ class TracksImport implements ToModel, SkipsOnError
     */
     public function model(array $row)
     {
-        return new TrackList([
-            'track_code' => $row[0],
-            'to_china' => $this->date,
-            'status' => 'Получено в Китае',
-            'reg_china' => 1,
-            'created_at' => date(now()),
-        ]);
+        if (isset($row[0])){
+            return new TrackList([
+                'track_code' => $row[0],
+                'to_china' => $this->date,
+                'status' => 'Получено на складе в Китае',
+                'reg_china' => 1,
+                'created_at' => date(now()),
+            ]);
+        }
     }
 }

@@ -42,6 +42,9 @@ class DashboardController extends Controller
         }elseif (Auth::user()->is_active === 1 && Auth::user()->type === 'stock'){
             $count = TrackList::query()->whereDate('to_china', Carbon::today())->count();
             return view('stock', ['count' => $count, 'config' => $config, 'qr' => $qrChina]);
+        }elseif (Auth::user()->type === 'newstock') {
+            $count = TrackList::query()->whereDate('created_at', Carbon::today())->count();
+            return view('newstock', ['count' => $count, 'config' => $config]);
         }elseif (Auth::user()->is_active === 1 && Auth::user()->type === 'almatyin'){
             $count = TrackList::query()->whereDate('to_almaty', Carbon::today())->count();
             return view('almaty', ['count' => $count, 'config' => $config, 'cityin' => 'Алматы', 'qr' => $qr]);
